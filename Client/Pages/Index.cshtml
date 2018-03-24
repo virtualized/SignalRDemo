@@ -1,0 +1,95 @@
+﻿@page
+@model NotifyModel
+@{
+}
+<div class="row">
+    <div class="col-sm-12">
+        <button id="getnotifs" class="btn btn-default">Refresh notifications</button><br />
+        <input id="message" type="text" placeholder="Notification message..." />
+        <button id="create" class="btn btn-primary">Create new notification</button>
+
+        <ul id="notifications">
+
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="/lib/signalr/signalr.js"></script>
+    <script type="text/javascript">
+        const notificationList = document.getElementById("notifications");
+        const getButton = document.getElementById("getnotifs");
+        const createButton = document.getElementById("create");
+        const messageInput = document.getElementById("message");
+
+        function appendNotification(notification) {
+            console.log(notification);
+            const li = document.createElement("li");
+            const completeButton = document.createElement("button");
+            completeButton.id = "btn" + notification.id;
+            completeButton.className = "btn btn-default";
+            completeButton.innerText = "Complete";
+            completeButton.dataset.notifid = notification.id;
+            completeButton.disabled = notification.completed;
+            completeButton.addEventListener("click", function(el) {
+                console.log(el.srcElement);
+                connection.send("Complete", el.srcElement.dataset.notifid);
+            });
+
+            li.innerText = notification.id + ": " + notification.message;
+            li.appendChild(completeButton);
+            notificationList.appendChild(li);
+        }
+
+        getButton.addEventListener("click", function() {
+            connection.send("BroadcastNotifications");
+        });
+
+        createButton.addEventListener("click", function() {
+            var m = messageInput.value;
+            console.log('creating notif: message: ' + m);
+            connection.send("Create", m);
+        })
+
+        var connection = new signalR.HubConnection("http://localhost:5001/hubs/notif");
+
+        connection.on("BroadcastNotifications", function(notifications) {
+            notificationList.innerHTML = "";
+
+            notifications.forEach(function(notification) {
+                appendNotification(notification);
+                console.log(notification);
+            });
+        });
+
+        connection.on("Completed", function(notification) {
+            $.bigBox({
+                title: "Task '" + notification.message + "' was completed",
+                content: "Task '" + notification.message + "' was completed",
+                color: "#3276B1",
+                //timeout: 8000,
+                icon: "fa fa-bell swing animated",
+                number: notification.id
+            });
+        });
+
+        connection.start().then(function() {
+            connection.send("BroadcastNotifications")
+        });
+
+        $('#eg2').click(function(e) {
+
+            $.bigBox({
+                title: "Big Information box",
+                content:
+                    "Lorem ipsum dolor sit amet, test consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+                color: "#3276B1",
+                //timeout: 8000,
+                icon: "fa fa-bell swing animated",
+                number: "2"
+            });
+
+            e.preventDefault();
+        });
+    </script>
+}
