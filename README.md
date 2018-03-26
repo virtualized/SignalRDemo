@@ -24,7 +24,7 @@ uses localdb (double check connecting string is good for you in Server/appsettin
 * `dotnet ef database update` (connection string is in appsettings.Development.json, named 'Default')
 
 ### If you don't have Visual Studio Code
-If you don't have vscode just cd to server and `dotnet run`, then cd to client and `dotnet run`; client is [http://localhost:5000] by default.
+If you don't have vscode just cd to server and `dotnet run --environment "Development"`, then cd to client and `dotnet run --environment "Development"`; client is [http://localhost:5000] by default.
 
 ### If you have Visual Studio Code
 There are 3 launch configurations for vscode
