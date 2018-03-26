@@ -18,9 +18,11 @@ uses localdb (double check connecting string is good for you in Server/appsettin
 ## How to get it running
 * pull/download (duh)
 * cd to Client
+* `dotnet restore`
 * `npm i` (restore packages)
 * `npm run Default` (a gulp task, generates css from sass; copies fonts)
 * cd to Server
+* `dotnet restore`
 * `dotnet ef database update` (connection string is in appsettings.Development.json, named 'Default')
 
 ### If you don't have Visual Studio Code
